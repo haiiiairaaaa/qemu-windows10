@@ -1,0 +1,20 @@
+name: Run QEMU Container
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  run-qemu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run QEMU container
+        run: |
+          docker compose -f compose.yml up -d
+          docker ps -a
