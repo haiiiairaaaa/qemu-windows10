@@ -5,8 +5,8 @@ services:
     environment:
       BOOT: "debian"
       CPU_CORES: "2"          # kurangi biar stabil di GitHub runner
-      RAM_SIZE: "10G"          # github runner cuma punya 7GB RAM total
-      DISK_SIZE: "20G"
+      RAM_SIZE: "8G"          # github runner cuma punya 7GB RAM total
+      DISK_SIZE: "15G"
     cap_add:
       - NET_ADMIN
     ports:
