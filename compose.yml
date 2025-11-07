@@ -3,9 +3,9 @@ services:
     image: qemux/qemu
     container_name: qemu
     environment:
-      BOOT: "https://iso.builds.garudalinux.org/iso/latest/garuda/mokka/latest.iso?r2=1"
+      BOOT: "debian"
       CPU_CORES: "2"          # kurangi biar stabil di GitHub runner
-      RAM_SIZE: "4G"          # github runner cuma punya 7GB RAM total
+      RAM_SIZE: "10G"          # github runner cuma punya 7GB RAM total
       DISK_SIZE: "20G"
     cap_add:
       - NET_ADMIN
