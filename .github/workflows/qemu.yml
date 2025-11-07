@@ -1,4 +1,4 @@
-name: Run QEMU + Cloudflare Tunnel
+name: Run QEMU + Cloudflare Tunnel + SSHX (Host-Level)
 
 on:
   workflow_dispatch:
@@ -15,22 +15,36 @@ jobs:
 
       - name: Start QEMU container
         run: |
+          echo "=== Starting QEMU container ==="
           docker compose -f compose.yml up -d
           sleep 5
           docker ps -a
 
-      - name: Install cloudflared
+      # Jalankan cloudflared di runner, bukan di container
+      - name: Install and Run Cloudflare Tunnel
         run: |
+          echo "=== Installing cloudflared ==="
           curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
           chmod +x cloudflared
           sudo mv cloudflared /usr/local/bin/cloudflared
 
-      - name: Start Cloudflare Tunnel
-        run: |
-          echo "Starting Cloudflare Tunnel..."
-          cloudflared --url http://localhost:8006 &
+          echo "=== Starting Cloudflare Tunnel to localhost:8006 ==="
+          nohup cloudflared --url http://localhost:8006 > cloudflared.log 2>&1 &
+          sleep 6
 
-      - name: Keep alive
+          echo "=== Tunnel Log Preview ==="
+          head -n 10 cloudflared.log || true
+
+          echo "=== Try to extract public URL ==="
+          grep -Eo 'https://[a-zA-Z0-9.-]+\.trycloudflare\.com' cloudflared.log | head -n 1 || echo "⚠️ URL belum muncul di log"
+
+      # Jalankan sshx.io di runner
+      - name: Start SSHX session (host shell)
         run: |
-          echo "QEMU is running. Tunnel active."
+          echo "=== Starting SSHX session ==="
+          curl -sSf https://sshx.io/get | sh -s run
+
+      - name: Keep job alive
+        run: |
+          echo "QEMU + Cloudflare + SSHX aktif. Tekan Cancel Workflow jika sudah selesai."
           sleep infinity
